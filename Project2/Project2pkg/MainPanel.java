@@ -12,39 +12,31 @@ import project1.PatientCollection;
 
 import javax.swing.JLabel;
 import javax.swing.DefaultComboBoxModel;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import javax.swing.JComboBox;
-import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JRadioButton;
-import javax.swing.JToggleButton;
 import javax.swing.JTextField;
-import java.awt.event.ItemListener;
-import java.awt.event.ItemEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.awt.event.KeyAdapter;
-import java.awt.event.KeyEvent;
 import javax.swing.ButtonGroup;
 import javax.swing.JMenuBar;
 import javax.swing.JMenu;
-import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 import javax.swing.JScrollPane;
-import javax.swing.JList;
-import javax.swing.JTree;
 import java.awt.Color;
 import javax.swing.SwingConstants;
 import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 public class MainPanel extends JPanel {
-	private final int WIDTH = 800, HEIGHT = 500;
+	//private final int WIDTH = 800, HEIGHT = 500;
 	private PatientCollection mypats;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextField textFieldsetresult;
@@ -95,9 +87,10 @@ public class MainPanel extends JPanel {
 
 		JLabel lblImage = new JLabel("");
 		lblImage.setBounds(69, 11, 456, 184);
-		lblImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Project2pkg/wel1.gif")));
+		lblImage.setIcon(new ImageIcon(getClass().getResource("/Project2pkg/wel1.gif")));
 		panelHome.add(lblImage);
-		// Action listeners for panelHome's components
+		// Action listeners for panelHome's buttons:
+		//Display the appropriate panel upon user's choice 
 		btnView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				panelView.setVisible(true);
@@ -173,6 +166,7 @@ public class MainPanel extends JPanel {
 				}
 			}
 		});
+		//button Addfile: Let user choose a file from FileChooser  
 		btnAddFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (fileChosen == null) {
@@ -191,8 +185,9 @@ public class MainPanel extends JPanel {
 					text += error;
 					textAreaFileAdd.setText(text);
 					// System.out.println(text);
-					comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-					comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+					//Update the comboBoxId in view and update panel since there are new patients
+					comboBoxIDUpdate.setModel(new DefaultComboBoxModel<String>((String[]) myIds1.toArray()));
+					comboBoxID.setModel(new DefaultComboBoxModel<String>((String[]) myIds1.toArray()));
 					// Reset file chosen
 					fileChosen = null;
 					lblFileChosen.setText("The file you chose is: ...");
@@ -281,7 +276,7 @@ public class MainPanel extends JPanel {
 					rdbtnDP.setSelected(false);
 			}
 		});
-		// Action listeners for panelUpdate's components
+		//Action listener: display JOptionPane to let the user confirm if they want to delete the patient id
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (patientUpdateId == null) {
@@ -302,6 +297,8 @@ public class MainPanel extends JPanel {
 				}
 			}
 		});
+		//Action listner for button update: ask the user to set the result to either CR or DP
+		//Display error if they chose none options
 		btnUpdate_1.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (patientUpdateId == null) {
@@ -339,6 +336,7 @@ public class MainPanel extends JPanel {
 		comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
 		comboBoxID.setBounds(199, 38, 53, 22);
 		panelView.add(comboBoxID);
+		//Action listener: display individual patient'information upon chosen from the comboBox
 		comboBoxID.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String id = (String) comboBoxID.getSelectedItem();
@@ -351,8 +349,9 @@ public class MainPanel extends JPanel {
 		lblGetPatient.setVerticalAlignment(SwingConstants.TOP);
 		lblGetPatient.setBounds(49, 82, 364, 32);
 		panelView.add(lblGetPatient);
-
+		
 		btnViewAllPat = new JButton("View All Patients");
+		//Action listener: display all patient's information upon clicking the button
 		btnViewAllPat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String id = "";

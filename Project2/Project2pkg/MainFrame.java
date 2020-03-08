@@ -21,11 +21,11 @@ public class MainFrame {
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		// set icon for frame
 		frame.setIconImage(new ImageIcon(".\\Project2pkg\\hospital.jpg").getImage());
-		frame.setSize(800, 500);
+		frame.setSize(615, 500);
 		MainPanel myPanel = new MainPanel();
 		frame.getContentPane().add(myPanel);
 		frame.pack();
-		// center the jframe on screen
+		// center the jFrame on screen
 		frame.setLocationRelativeTo(null);
 		frame.setVisible(true);
 		frame.addWindowListener(new WindowAdapter() {
