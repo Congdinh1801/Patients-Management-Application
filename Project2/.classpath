@@ -6,6 +6,6 @@
 		</attributes>
 	</classpathentry>
 	<classpathentry kind="src" path=""/>
-	<classpathentry exported="true" kind="lib" path="Project2pkg/project1solution.jar"/>
+	<classpathentry kind="lib" path="Project2pkg/project1solution.jar"/>
 	<classpathentry kind="output" path=""/>
 </classpath>
