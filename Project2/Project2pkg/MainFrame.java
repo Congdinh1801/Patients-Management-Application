@@ -1,3 +1,8 @@
+/*Author: Dinh Hoang
+ * Project 2 - CS3381 OO Java development
+ * Front-end for Patient Collection program
+ * MainTester: setting up the main frame 
+ */
 package Project2pkg;
 
 import java.awt.BorderLayout;
