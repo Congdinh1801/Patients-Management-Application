@@ -2,6 +2,7 @@
  * Project 2 - CS3381 OO Java development
  * Front-end for Patient Collection program
  * MainPanel: including home panel, viewPanel, updatePanel and insertPanel
+ * welcome gif source: http://www.clipartbest.com/cliparts/9iR/XX9/9iRXX9nie.gif
  */
 package Project2pkg;
 
@@ -50,7 +51,7 @@ public class MainPanel extends JPanel {
 	private JTextField textFieldRemove;
 	private String fileChosen;
 	private ArrayList<String> myIds1;
-	private JComboBox<String> comboBoxID_1;
+	private JComboBox<String> comboBoxIDUpdate;
 	private JComboBox<String> comboBoxID;
 	private String patientUpdateId = null;
 	private JLabel lblGetPatient;
@@ -66,13 +67,144 @@ public class MainPanel extends JPanel {
 
 		mypats = new PatientCollection("./data.csv");
 		setLayout(null);
-		setPreferredSize(new Dimension(WIDTH, HEIGHT));
+		setPreferredSize(new Dimension(615, 500));
 		fileChosen = null;
 		myIds1 = mypats.getIds();
 
+		// Panel Home
+		panelHome = new JPanel();
+		panelHome.setBounds(10, 33, 495, 445);
+		add(panelHome);
+		panelHome.setVisible(true); // when open the program, the user will see the panel home first
+
+		JButton btnView = new JButton("View Patient Information");
+		btnView.setBounds(172, 206, 209, 23);
+
+		panelHome.setLayout(null);
+		panelHome.add(btnView);
+
+		JButton btnUpdate = new JButton("Update or Remove");
+		btnUpdate.setBounds(172, 260, 209, 23);
+
+		panelHome.add(btnUpdate);
+
+		JButton btnAdd = new JButton("Add New Patient");
+		btnAdd.setBounds(172, 312, 209, 23);
+
+		panelHome.add(btnAdd);
+
+		JLabel lblImage = new JLabel("");
+		lblImage.setBounds(69, 11, 456, 184);
+		lblImage.setIcon(new javax.swing.ImageIcon(getClass().getResource("/Project2pkg/wel1.gif")));
+		panelHome.add(lblImage);
+		// Action listeners for panelHome's components
+		btnView.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				panelView.setVisible(true);
+				panelAdd.setVisible(false);
+				panelHome.setVisible(false);
+				panelUpdate.setVisible(false);
+			}
+		});
+		btnUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				panelView.setVisible(false);
+				panelAdd.setVisible(false);
+				panelHome.setVisible(false);
+				panelUpdate.setVisible(true);
+			}
+		});
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				panelView.setVisible(false);
+				panelAdd.setVisible(true);
+				panelHome.setVisible(false);
+				panelUpdate.setVisible(false);
+			}
+		});
+
+		// Panel Add
+		panelAdd = new JPanel();
+		panelAdd.setBounds(10, 31, 479, 469);
+		add(panelAdd);
+		panelAdd.setLayout(null);
+		panelAdd.setVisible(false);
+
+		JLabel lblFileIntro = new JLabel("Choose a file to add new patients");
+		lblFileIntro.setBounds(119, 54, 249, 39);
+		panelAdd.add(lblFileIntro);
+
+		JButton btnOpen = new JButton("Open");
+		btnOpen.setBounds(164, 104, 89, 23);
+		panelAdd.add(btnOpen);
+
+		JLabel lblFileChosen = new JLabel("The file you chose is: ...");
+		lblFileChosen.setVerticalAlignment(SwingConstants.TOP);
+		lblFileChosen.setBounds(60, 138, 353, 30);
+		panelAdd.add(lblFileChosen);
+
+		JButton btnAddFile = new JButton("Add to Record");
+		btnAddFile.setBounds(148, 179, 137, 23);
+		panelAdd.add(btnAddFile);
+
+		JScrollPane scrollPane = new JScrollPane();
+		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane.setBounds(60, 227, 359, 130);
+		panelAdd.add(scrollPane);
+
+		JTextArea textAreaFileAdd = new JTextArea();
+		scrollPane.setViewportView(textAreaFileAdd);
+		// Action listener for panel Insert's components
+		// button Open: ask the user to choose a file to add new patients
+		btnOpen.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				JFileChooser jfc = new JFileChooser("./");
+				int returnValue = jfc.showOpenDialog(null);
+
+				if (returnValue == JFileChooser.APPROVE_OPTION) {
+					File selectedFile = jfc.getSelectedFile();
+					fileChosen = selectedFile.getName(); // set the file chosen to the selected file
+					String text = "The file you chose is: " + fileChosen;
+					lblFileChosen.setText(text);
+					System.out.println(text);
+					// reset the add result text field
+					textAreaFileAdd.setText("");
+				}
+			}
+		});
+		btnAddFile.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (fileChosen == null) {
+					textAreaFileAdd.setText("You haven't chosen any file yet.");
+				} else {
+					String error = "";
+					String fileToADD = "./";
+					fileToADD += fileChosen;
+					// System.out.println(fileToADD);
+					error = mypats.addPatientsFromFile(fileToADD);
+					String text = "Successfully added " + fileChosen + " to the record!\n";
+					if (error == null)
+						text += "There is no error";
+					else
+						text += "There are some errors:\n";
+					text += error;
+					textAreaFileAdd.setText(text);
+					// System.out.println(text);
+					comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+					comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+					// Reset file chosen
+					fileChosen = null;
+					lblFileChosen.setText("The file you chose is: ...");
+
+				}
+
+			}
+		});
+
 		// Panel Update
 		panelUpdate = new JPanel();
-		panelUpdate.setBounds(10, 25, 515, 464);
+		panelUpdate.setBounds(10, 33, 515, 456);
 		add(panelUpdate);
 		panelUpdate.setVisible(false);
 		panelUpdate.setLayout(null);
@@ -106,27 +238,26 @@ public class MainPanel extends JPanel {
 		lblPatientsId_1.setBounds(127, 36, 67, 14);
 		panelUpdate.add(lblPatientsId_1);
 
-		comboBoxID_1 = new JComboBox<String>();
-		comboBoxID_1.addActionListener(new ActionListener() {
+		comboBoxIDUpdate = new JComboBox<String>();
+		comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+		comboBoxIDUpdate.setBounds(204, 32, 53, 22);
+		comboBoxIDUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				patientUpdateId = (String) comboBoxID_1.getSelectedItem();
-				lblChangingTheResult
-						.setText("Set the result for the patient with ID number " + comboBoxID_1.getSelectedItem());
-				lblRemoveThePatient.setText("Remove the patient with ID number " + comboBoxID_1.getSelectedItem());
+				patientUpdateId = (String) comboBoxIDUpdate.getSelectedItem();
+				lblChangingTheResult.setText("Set the result for the patient with ID number " + patientUpdateId);
+				lblRemoveThePatient.setText("Remove the patient with ID number " + patientUpdateId);
 				textFieldsetresult.setText("");
 				textFieldRemove.setText("");
-				
+
 			}
 		});
-		comboBoxID_1.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-		comboBoxID_1.setBounds(204, 32, 53, 22);
-		panelUpdate.add(comboBoxID_1);
+		panelUpdate.add(comboBoxIDUpdate);
 
 		JButton btnRemove = new JButton("Remove");
 		btnRemove.setBounds(152, 289, 90, 23);
 		panelUpdate.add(btnRemove);
 
-		 lblRemoveThePatient = new JLabel("Remove the patient with ID number ...");
+		lblRemoveThePatient = new JLabel("Remove the patient with ID number ...");
 		lblRemoveThePatient.setBounds(46, 251, 344, 27);
 		panelUpdate.add(lblRemoveThePatient);
 
@@ -150,7 +281,7 @@ public class MainPanel extends JPanel {
 					rdbtnDP.setSelected(false);
 			}
 		});
-		// Action listeners for panelUpdate:
+		// Action listeners for panelUpdate's components
 		btnRemove.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (patientUpdateId == null) {
@@ -161,7 +292,7 @@ public class MainPanel extends JPanel {
 							JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
 						mypats.removePatient(patientUpdateId);
 						textFieldRemove.setText("The patient with ID number " + patientUpdateId + " is removed");
-						comboBoxID_1.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+						comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
 						comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
 						// reset the patient Update Id and the labels
 						patientUpdateId = null;
@@ -190,128 +321,6 @@ public class MainPanel extends JPanel {
 						}
 					}
 				}
-			}
-		});
-
-		// Panle Home
-		panelHome = new JPanel();
-		panelHome.setBounds(10, 33, 465, 424);
-		add(panelHome);
-		panelHome.setVisible(true);
-
-		JButton btnView = new JButton("View Patient Information");
-		btnView.setBounds(142, 108, 209, 23);
-
-		panelHome.setLayout(null);
-		panelHome.add(btnView);
-
-		JButton btnUpdate = new JButton("Update or Remove");
-		btnUpdate.setBounds(142, 162, 209, 23);
-
-		panelHome.add(btnUpdate);
-
-		JButton btnAdd = new JButton("Add New Patient");
-		btnAdd.setBounds(142, 214, 209, 23);
-
-		panelHome.add(btnAdd);
-		// Action listeners for panelHome
-		btnView.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				panelView.setVisible(true);
-				panelAdd.setVisible(false);
-				panelHome.setVisible(false);
-				panelUpdate.setVisible(false);
-			}
-		});
-		btnUpdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				panelView.setVisible(false);
-				panelAdd.setVisible(false);
-				panelHome.setVisible(false);
-				panelUpdate.setVisible(true);
-			}
-		});
-		btnAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				panelView.setVisible(false);
-				panelAdd.setVisible(true);
-				panelHome.setVisible(false);
-				panelUpdate.setVisible(false);
-			}
-		});
-
-		// panel "Add"
-		panelAdd = new JPanel();
-		panelAdd.setBounds(10, 24, 479, 476);
-		add(panelAdd);
-		panelAdd.setLayout(null);
-		panelAdd.setVisible(false);
-
-		JLabel lblFileIntro = new JLabel("Choose a file to add new patients");
-		lblFileIntro.setBounds(119, 54, 249, 39);
-		panelAdd.add(lblFileIntro);
-
-		JButton btnOpen = new JButton("Open");
-		btnOpen.setBounds(164, 104, 89, 23);
-		panelAdd.add(btnOpen);
-
-		JLabel lblFileChosen = new JLabel("The file you chose is: ...");
-		lblFileChosen.setVerticalAlignment(SwingConstants.TOP);
-		lblFileChosen.setBounds(60, 138, 353, 30);
-		panelAdd.add(lblFileChosen);
-
-		JButton btnAddFile = new JButton("Add to Record");
-		btnAddFile.setBounds(148, 179, 137, 23);
-		panelAdd.add(btnAddFile);
-
-		JScrollPane scrollPane = new JScrollPane();
-		scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane.setBounds(60, 227, 359, 130);
-		panelAdd.add(scrollPane);
-
-		JTextArea textAreaFileAdd = new JTextArea();
-		scrollPane.setViewportView(textAreaFileAdd);
-		// Action listener for panel Insert
-		btnOpen.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				JFileChooser jfc = new JFileChooser("./");
-
-				int returnValue = jfc.showOpenDialog(null);
-
-				if (returnValue == JFileChooser.APPROVE_OPTION) {
-					File selectedFile = jfc.getSelectedFile();
-					fileChosen = selectedFile.getName();
-					String text = "The file you chose is: ";
-					text += fileChosen;
-					lblFileChosen.setText(text);
-					System.out.println(text);
-				}
-			}
-		});
-		btnAddFile.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (fileChosen == null) {
-					textAreaFileAdd.setText("You haven't chosen any file yet.");
-				} else {
-					String error = "";
-					String fileToADD = "./";
-					fileToADD += fileChosen;
-					System.out.println(fileToADD);
-					error = mypats.addPatientsFromFile(fileToADD);
-					String text = "Successfully added to the record!\n";
-					if (error == null)
-						text += "There is no error";
-					else
-						text += "There are some errors:\n";
-					text += error;
-
-					textAreaFileAdd.setText(text);
-					System.out.println(text);
-					comboBoxID_1.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-					comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-				}
-
 			}
 		});
 
@@ -371,22 +380,24 @@ public class MainPanel extends JPanel {
 		myIds1 = mypats.getIds();
 
 		JMenuBar menuBar = new JMenuBar();
-		menuBar.setBackground(Color.WHITE);
-		menuBar.setBounds(0, 0, WIDTH, 22);
+		menuBar.setForeground(Color.BLACK);
+		menuBar.setBackground(new Color(0, 153, 51));
+		menuBar.setBounds(0, 0, 800, 30);
 		add(menuBar);
 		JMenu mnHome = new JMenu("Home");
+		mnHome.setForeground(Color.WHITE);
 		menuBar.add(mnHome);
 		JMenu mnView = new JMenu("View");
+		mnView.setForeground(Color.WHITE);
 		menuBar.add(mnView);
 		JMenu mnUpdate = new JMenu("Update");
+		mnUpdate.setForeground(Color.WHITE);
 		menuBar.add(mnUpdate);
 		JMenu mnInsert = new JMenu("Insert");
+		mnInsert.setForeground(Color.WHITE);
 		menuBar.add(mnInsert);
 
-		/*
-		 * Listener functions start here
-		 */
-		// Action listeners for menu bar
+		// Action listeners for menu bar's components
 		mnHome.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
@@ -426,6 +437,7 @@ public class MainPanel extends JPanel {
 		});
 	}
 
+	// save data after close the program
 	public void doClose() {
 		mypats.doWrite("./data.csv"); // change it to data.csv after done
 	}

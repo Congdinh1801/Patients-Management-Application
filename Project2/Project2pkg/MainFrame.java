@@ -25,12 +25,9 @@ public class MainFrame {
 		MainPanel myPanel = new MainPanel();
 		frame.getContentPane().add(myPanel);
 		frame.pack();
-
-		// here's the part where i center the jframe on screen
+		// center the jframe on screen
 		frame.setLocationRelativeTo(null);
-
 		frame.setVisible(true);
-
 		frame.addWindowListener(new WindowAdapter() {
 			public void windowClosing(WindowEvent e) {
 				myPanel.doClose();
