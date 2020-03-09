@@ -36,7 +36,6 @@ import javax.swing.JTextArea;
 import javax.swing.ScrollPaneConstants;
 
 public class MainPanel extends JPanel {
-	//private final int WIDTH = 800, HEIGHT = 500;
 	private PatientCollection mypats;
 	private final ButtonGroup buttonGroup = new ButtonGroup();
 	private JTextField textFieldsetresult;
