@@ -53,6 +53,8 @@ public class MainPanel extends JPanel {
 	private JPanel panelUpdate;
 	private JPanel panelHome;
 	private JLabel lblRemoveThePatient;
+	private JRadioButton rdbtnCR;
+	private JRadioButton rdbtnDP;
 
 	public MainPanel() {
 
@@ -61,6 +63,119 @@ public class MainPanel extends JPanel {
 		setPreferredSize(new Dimension(615, 500));
 		fileChosen = null;
 		myIds1 = mypats.getIds();
+
+		// Panel Update
+		panelUpdate = new JPanel();
+		panelUpdate.setBounds(10, 33, 515, 456);
+		add(panelUpdate);
+		panelUpdate.setVisible(false);
+		panelUpdate.setLayout(null);
+
+		rdbtnDP = new JRadioButton("DP");
+		buttonGroup.add(rdbtnDP);
+		rdbtnDP.setBounds(127, 146, 47, 23);
+		panelUpdate.add(rdbtnDP);
+
+		rdbtnCR = new JRadioButton("CR");
+		buttonGroup.add(rdbtnCR);
+		rdbtnCR.setBounds(127, 120, 47, 23);
+		panelUpdate.add(rdbtnCR);
+
+		JLabel lblChangingTheResult = new JLabel("Set the result for the patient with ID number ...");
+		lblChangingTheResult.setBounds(46, 99, 344, 14);
+		panelUpdate.add(lblChangingTheResult);
+
+		JButton btnUpdate_1 = new JButton("Update");
+		btnUpdate_1.setBounds(189, 124, 84, 23);
+		panelUpdate.add(btnUpdate_1);
+
+		textFieldsetresult = new JTextField();
+		textFieldsetresult.setBounds(67, 197, 323, 43);
+		panelUpdate.add(textFieldsetresult);
+		textFieldsetresult.setColumns(10);
+
+		JLabel lblPatientsId_1 = new JLabel("Patient's ID");
+		lblPatientsId_1.setBounds(127, 36, 67, 14);
+		panelUpdate.add(lblPatientsId_1);
+
+		comboBoxIDUpdate = new JComboBox<String>();
+		comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+		comboBoxIDUpdate.setBounds(204, 32, 53, 22);
+		comboBoxIDUpdate.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				patientUpdateId = (String) comboBoxIDUpdate.getSelectedItem();
+				lblChangingTheResult.setText("Set the result for the patient with ID number " + patientUpdateId);
+				lblRemoveThePatient.setText("Remove the patient with ID number " + patientUpdateId);
+				textFieldsetresult.setText("");
+				textFieldRemove.setText("");
+
+			}
+		});
+		panelUpdate.add(comboBoxIDUpdate);
+
+		JButton btnRemove = new JButton("Remove");
+		btnRemove.setBounds(152, 289, 90, 23);
+		panelUpdate.add(btnRemove);
+
+		lblRemoveThePatient = new JLabel("Remove the patient with ID number ...");
+		lblRemoveThePatient.setBounds(46, 251, 344, 27);
+		panelUpdate.add(lblRemoveThePatient);
+
+		textFieldRemove = new JTextField();
+		textFieldRemove.setColumns(10);
+		textFieldRemove.setBounds(67, 336, 323, 43);
+		panelUpdate.add(textFieldRemove);
+
+		JLabel lblUpdateGuide = new JLabel("Choose a Patient ID to update or remove ");
+		lblUpdateGuide.setBounds(77, 11, 374, 14);
+		panelUpdate.add(lblUpdateGuide);
+
+		// Action listener: display JOptionPane to let the user confirm if they want to
+		// delete the patient id
+		btnRemove.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (patientUpdateId == null) {
+					textFieldRemove.setText("You haven't chosen any patient to remove yet.");
+				} else {
+					String warningMsg = "Are you sure you want to delete Patient ID number " + patientUpdateId + "?";
+					if (JOptionPane.showConfirmDialog(null, warningMsg, "Confirmation",
+							JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
+						mypats.removePatient(patientUpdateId);
+						textFieldRemove.setText("The patient with ID number " + patientUpdateId + " is removed");
+						comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+						comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+						// reset the patient Update Id and the labels
+						patientUpdateId = null;
+						lblChangingTheResult.setText("Set the result for the patient with ID number ...");
+						lblRemoveThePatient.setText("Remove the patient with ID number ...");
+					}
+				}
+			}
+		});
+		// Action listner for button update: ask the user to set the result to either CR
+		// or DP
+		// Display error if they chose none options
+		btnUpdate_1.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				if (patientUpdateId == null) {
+					textFieldsetresult.setText("You haven't chosen any patient to update yet.");
+				} else {
+					if (rdbtnCR.isSelected() == false && rdbtnDP.isSelected() == false) {
+						textFieldsetresult.setText("Error! Please choose which result you want to set to.");
+					} else {
+						if (rdbtnCR.isSelected()) {
+							mypats.getPatient(patientUpdateId).setResult("CR");
+							textFieldsetresult.setText(
+									"Successfully set the result to CR for patient ID number " + patientUpdateId);
+						} else {
+							mypats.getPatient(patientUpdateId).setResult("DP");
+							textFieldsetresult.setText(
+									"Successfully set the result to DP for patient ID number " + patientUpdateId);
+						}
+					}
+				}
+			}
+		});
 
 		// Panel Home
 		panelHome = new JPanel();
@@ -89,7 +204,7 @@ public class MainPanel extends JPanel {
 		lblImage.setIcon(new ImageIcon(getClass().getResource("/Project2pkg/wel1.gif")));
 		panelHome.add(lblImage);
 		// Action listeners for panelHome's buttons:
-		//Display the appropriate panel upon user's choice 
+		// Display the appropriate panel upon user's choice
 		btnView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				panelView.setVisible(true);
@@ -165,7 +280,7 @@ public class MainPanel extends JPanel {
 				}
 			}
 		});
-		//button Addfile: Let user choose a file from FileChooser  
+		// button Addfile: Let user choose a file from FileChooser
 		btnAddFile.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				if (fileChosen == null) {
@@ -184,7 +299,7 @@ public class MainPanel extends JPanel {
 					text += error;
 					textAreaFileAdd.setText(text);
 					// System.out.println(text);
-					//Update the comboBoxId in view and update panel since there are new patients
+					// Update the comboBoxId in view and update panel since there are new patients
 					comboBoxIDUpdate.setModel(new DefaultComboBoxModel<String>((String[]) myIds1.toArray()));
 					comboBoxID.setModel(new DefaultComboBoxModel<String>((String[]) myIds1.toArray()));
 					// Reset file chosen
@@ -193,130 +308,6 @@ public class MainPanel extends JPanel {
 
 				}
 
-			}
-		});
-
-		// Panel Update
-		panelUpdate = new JPanel();
-		panelUpdate.setBounds(10, 33, 515, 456);
-		add(panelUpdate);
-		panelUpdate.setVisible(false);
-		panelUpdate.setLayout(null);
-
-		JRadioButton rdbtnDP = new JRadioButton("DP");
-		buttonGroup.add(rdbtnDP);
-		rdbtnDP.setBounds(127, 146, 47, 23);
-		panelUpdate.add(rdbtnDP);
-		rdbtnDP.setSelected(false);
-
-		JRadioButton rdbtnCR = new JRadioButton("CR");
-		buttonGroup.add(rdbtnCR);
-		rdbtnCR.setBounds(127, 120, 47, 23);
-		panelUpdate.add(rdbtnCR);
-		rdbtnCR.setSelected(false);
-
-		JLabel lblChangingTheResult = new JLabel("Set the result for the patient with ID number ...");
-		lblChangingTheResult.setBounds(46, 99, 344, 14);
-		panelUpdate.add(lblChangingTheResult);
-
-		JButton btnUpdate_1 = new JButton("Update");
-		btnUpdate_1.setBounds(189, 124, 84, 23);
-		panelUpdate.add(btnUpdate_1);
-
-		textFieldsetresult = new JTextField();
-		textFieldsetresult.setBounds(67, 197, 323, 43);
-		panelUpdate.add(textFieldsetresult);
-		textFieldsetresult.setColumns(10);
-
-		JLabel lblPatientsId_1 = new JLabel("Patient's ID");
-		lblPatientsId_1.setBounds(127, 36, 67, 14);
-		panelUpdate.add(lblPatientsId_1);
-
-		comboBoxIDUpdate = new JComboBox<String>();
-		comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-		comboBoxIDUpdate.setBounds(204, 32, 53, 22);
-		comboBoxIDUpdate.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				patientUpdateId = (String) comboBoxIDUpdate.getSelectedItem();
-				lblChangingTheResult.setText("Set the result for the patient with ID number " + patientUpdateId);
-				lblRemoveThePatient.setText("Remove the patient with ID number " + patientUpdateId);
-				textFieldsetresult.setText("");
-				textFieldRemove.setText("");
-
-			}
-		});
-		panelUpdate.add(comboBoxIDUpdate);
-
-		JButton btnRemove = new JButton("Remove");
-		btnRemove.setBounds(152, 289, 90, 23);
-		panelUpdate.add(btnRemove);
-
-		lblRemoveThePatient = new JLabel("Remove the patient with ID number ...");
-		lblRemoveThePatient.setBounds(46, 251, 344, 27);
-		panelUpdate.add(lblRemoveThePatient);
-
-		textFieldRemove = new JTextField();
-		textFieldRemove.setColumns(10);
-		textFieldRemove.setBounds(67, 336, 323, 43);
-		panelUpdate.add(textFieldRemove);
-
-		JLabel lblUpdateGuide = new JLabel("Choose a Patient ID to update or remove ");
-		lblUpdateGuide.setBounds(77, 11, 374, 14);
-		panelUpdate.add(lblUpdateGuide);
-		rdbtnDP.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnDP.isSelected())
-					rdbtnDP.setSelected(false);
-			}
-		});
-		rdbtnCR.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (rdbtnCR.isSelected())
-					rdbtnDP.setSelected(false);
-			}
-		});
-		//Action listener: display JOptionPane to let the user confirm if they want to delete the patient id
-		btnRemove.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (patientUpdateId == null) {
-					textFieldRemove.setText("You haven't chosen any patient to remove yet.");
-				} else {
-					String warningMsg = "Are you sure you want to delete Patient ID number " + patientUpdateId + "?";
-					if (JOptionPane.showConfirmDialog(null, warningMsg, "Confirmation",
-							JOptionPane.YES_NO_OPTION) == JOptionPane.YES_OPTION) {
-						mypats.removePatient(patientUpdateId);
-						textFieldRemove.setText("The patient with ID number " + patientUpdateId + " is removed");
-						comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-						comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-						// reset the patient Update Id and the labels
-						patientUpdateId = null;
-						lblChangingTheResult.setText("Set the result for the patient with ID number ...");
-						lblRemoveThePatient.setText("Remove the patient with ID number ...");
-					}
-				}
-			}
-		});
-		//Action listner for button update: ask the user to set the result to either CR or DP
-		//Display error if they chose none options
-		btnUpdate_1.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				if (patientUpdateId == null) {
-					textFieldsetresult.setText("You haven't chosen any patient to update yet.");
-				} else {
-					if (rdbtnCR.isSelected() == false && rdbtnDP.isSelected() == false) {
-						textFieldsetresult.setText("Error! Please choose which result you want to set to.");
-					} else {
-						if (rdbtnCR.isSelected()) {
-							mypats.getPatient(patientUpdateId).setResult("CR");
-							textFieldsetresult.setText(
-									"Successfully set the result to CR for patient ID number " + patientUpdateId);
-						} else {
-							mypats.getPatient(patientUpdateId).setResult("DP");
-							textFieldsetresult.setText(
-									"Successfully set the result to DP for patient ID number " + patientUpdateId);
-						}
-					}
-				}
 			}
 		});
 
@@ -335,7 +326,8 @@ public class MainPanel extends JPanel {
 		comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
 		comboBoxID.setBounds(199, 38, 53, 22);
 		panelView.add(comboBoxID);
-		//Action listener: display individual patient'information upon chosen from the comboBox
+		// Action listener: display individual patient'information upon chosen from the
+		// comboBox
 		comboBoxID.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String id = (String) comboBoxID.getSelectedItem();
@@ -348,9 +340,9 @@ public class MainPanel extends JPanel {
 		lblGetPatient.setVerticalAlignment(SwingConstants.TOP);
 		lblGetPatient.setBounds(49, 82, 364, 32);
 		panelView.add(lblGetPatient);
-		
+
 		btnViewAllPat = new JButton("View All Patients");
-		//Action listener: display all patient's information upon clicking the button
+		// Action listener: display all patient's information upon clicking the button
 		btnViewAllPat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String id = "";
