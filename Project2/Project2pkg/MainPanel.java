@@ -42,8 +42,8 @@ public class MainPanel extends JPanel {
 	private JTextField textFieldRemove;
 	private String fileChosen;
 	private ArrayList<String> myIds1;
-	private JComboBox<String> comboBoxIDUpdate;
-	private JComboBox<String> comboBoxID;
+	private JComboBox comboBoxIDUpdate;
+	private JComboBox comboBoxIDView;
 	private String patientUpdateId = null;
 	private JLabel lblGetPatient;
 	private JButton btnViewAllPat;
@@ -98,7 +98,7 @@ public class MainPanel extends JPanel {
 		lblPatientsId_1.setBounds(127, 36, 67, 14);
 		panelUpdate.add(lblPatientsId_1);
 
-		comboBoxIDUpdate = new JComboBox<String>();
+		comboBoxIDUpdate = new JComboBox();
 		comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
 		comboBoxIDUpdate.setBounds(204, 32, 53, 22);
 		comboBoxIDUpdate.addActionListener(new ActionListener() {
@@ -143,11 +143,14 @@ public class MainPanel extends JPanel {
 						mypats.removePatient(patientUpdateId);
 						textFieldRemove.setText("The patient with ID number " + patientUpdateId + " is removed");
 						comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-						comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+						comboBoxIDView.setModel(new DefaultComboBoxModel(myIds1.toArray()));
 						// reset the patient Update Id and the labels
 						patientUpdateId = null;
 						lblChangingTheResult.setText("Set the result for the patient with ID number ...");
 						lblRemoveThePatient.setText("Remove the patient with ID number ...");
+						// update the text area for view all patient
+						textAreaViewAllPat.setText("");
+						lblGetPatient.setText("Patient's Information display here");
 					}
 				}
 			}
@@ -172,63 +175,71 @@ public class MainPanel extends JPanel {
 							textFieldsetresult.setText(
 									"Successfully set the result to DP for patient ID number " + patientUpdateId);
 						}
+						// update the text area for view all patient
+						textAreaViewAllPat.setText("");
+						lblGetPatient.setText("Patient's Information display here");
 					}
 				}
 			}
 		});
 
-		// Panel Home
-		panelHome = new JPanel();
-		panelHome.setBounds(10, 33, 495, 445);
-		add(panelHome);
-		panelHome.setVisible(true); // when open the program, the user will see the panel home first
+		// Panel View
+		panelView = new JPanel();
+		panelView.setBounds(25, 33, 526, 456);
+		add(panelView);
+		panelView.setVisible(false);
+		panelView.setLayout(null);
 
-		JButton btnView = new JButton("View Patient Information");
-		btnView.setBounds(172, 206, 209, 23);
+		JLabel lblPatientsId = new JLabel("Patient's ID");
+		lblPatientsId.setBounds(122, 42, 67, 14);
+		panelView.add(lblPatientsId);
 
-		panelHome.setLayout(null);
-		panelHome.add(btnView);
-
-		JButton btnUpdate = new JButton("Update or Remove");
-		btnUpdate.setBounds(172, 260, 209, 23);
-
-		panelHome.add(btnUpdate);
-
-		JButton btnAdd = new JButton("Add New Patient");
-		btnAdd.setBounds(172, 312, 209, 23);
-
-		panelHome.add(btnAdd);
-
-		JLabel lblImage = new JLabel("");
-		lblImage.setBounds(69, 11, 456, 184);
-		lblImage.setIcon(new ImageIcon(getClass().getResource("/Project2pkg/wel1.gif")));
-		panelHome.add(lblImage);
-		// Action listeners for panelHome's buttons:
-		// Display the appropriate panel upon user's choice
-		btnView.addActionListener(new ActionListener() {
+		// comboBoxIDView = new JComboBox<String>();
+		comboBoxIDView = new JComboBox();
+		comboBoxIDView.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+		comboBoxIDView.setBounds(199, 38, 53, 22);
+		panelView.add(comboBoxIDView);
+		// Action listener: display individual patient'information upon chosen from the
+		// comboBox
+		comboBoxIDView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				panelView.setVisible(true);
-				panelAdd.setVisible(false);
-				panelHome.setVisible(false);
-				panelUpdate.setVisible(false);
+				String id = (String) comboBoxIDView.getSelectedItem();
+				String text = mypats.getPatient(id).toString();
+				lblGetPatient.setText(text);
 			}
 		});
-		btnUpdate.addActionListener(new ActionListener() {
+
+		lblGetPatient = new JLabel("Patient's Information display here");
+		lblGetPatient.setVerticalAlignment(SwingConstants.TOP);
+		lblGetPatient.setBounds(49, 82, 364, 32);
+		panelView.add(lblGetPatient);
+
+		btnViewAllPat = new JButton("View All Patients");
+		// Action listener: display all patient's information upon clicking the button
+		btnViewAllPat.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				panelView.setVisible(false);
-				panelAdd.setVisible(false);
-				panelHome.setVisible(false);
-				panelUpdate.setVisible(true);
+				String id = "";
+				String text = "";
+				for (int i = 0; i < myIds1.size(); i++) {
+					id = myIds1.get(i);
+					text += mypats.getPatient(id).toString();
+					text += '\n';
+				}
+				textAreaViewAllPat.setText(text);
+
 			}
 		});
-		btnAdd.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent e) {
-				panelView.setVisible(false);
-				panelAdd.setVisible(true);
-				panelHome.setVisible(false);
-				panelUpdate.setVisible(false);
-			}
-		});
+		btnViewAllPat.setBounds(108, 118, 154, 23);
+		panelView.add(btnViewAllPat);
+
+		JScrollPane scrollPane_1 = new JScrollPane();
+		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+		scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+		scrollPane_1.setBounds(49, 164, 431, 223);
+		panelView.add(scrollPane_1);
+
+		textAreaViewAllPat = new JTextArea();
+		scrollPane_1.setViewportView(textAreaViewAllPat);
 
 		// Panel Add
 		panelAdd = new JPanel();
@@ -300,73 +311,71 @@ public class MainPanel extends JPanel {
 					textAreaFileAdd.setText(text);
 					// System.out.println(text);
 					// Update the comboBoxId in view and update panel since there are new patients
-					comboBoxIDUpdate.setModel(new DefaultComboBoxModel<String>((String[]) myIds1.toArray()));
-					comboBoxID.setModel(new DefaultComboBoxModel<String>((String[]) myIds1.toArray()));
+					comboBoxIDUpdate.setModel(new DefaultComboBoxModel(myIds1.toArray()));
+					comboBoxIDView.setModel(new DefaultComboBoxModel(myIds1.toArray()));
 					// Reset file chosen
 					fileChosen = null;
 					lblFileChosen.setText("The file you chose is: ...");
+					// update the text area for view all patient
+					textAreaViewAllPat.setText("");
 
 				}
 
 			}
 		});
 
-		// Panel View
-		panelView = new JPanel();
-		panelView.setBounds(25, 33, 526, 456);
-		add(panelView);
-		panelView.setVisible(false);
-		panelView.setLayout(null);
+		// Panel Home
+		panelHome = new JPanel();
+		panelHome.setBounds(10, 33, 495, 445);
+		add(panelHome);
+		panelHome.setVisible(true); // when open the program, the user will see the panel home first
 
-		JLabel lblPatientsId = new JLabel("Patient's ID");
-		lblPatientsId.setBounds(122, 42, 67, 14);
-		panelView.add(lblPatientsId);
+		JButton btnView = new JButton("View Patient Information");
+		btnView.setBounds(172, 206, 209, 23);
 
-		comboBoxID = new JComboBox<String>();
-		comboBoxID.setModel(new DefaultComboBoxModel(myIds1.toArray()));
-		comboBoxID.setBounds(199, 38, 53, 22);
-		panelView.add(comboBoxID);
-		// Action listener: display individual patient'information upon chosen from the
-		// comboBox
-		comboBoxID.addActionListener(new ActionListener() {
+		panelHome.setLayout(null);
+		panelHome.add(btnView);
+
+		JButton btnUpdate = new JButton("Update or Remove");
+		btnUpdate.setBounds(172, 260, 209, 23);
+
+		panelHome.add(btnUpdate);
+
+		JButton btnAdd = new JButton("Add New Patient");
+		btnAdd.setBounds(172, 312, 209, 23);
+
+		panelHome.add(btnAdd);
+
+		JLabel lblImage = new JLabel("");
+		lblImage.setBounds(69, 11, 456, 184);
+		lblImage.setIcon(new ImageIcon(getClass().getResource("/Project2pkg/wel1.gif")));
+		panelHome.add(lblImage);
+		// Action listeners for panelHome's buttons:
+		// Display the appropriate panel upon user's choice
+		btnView.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String id = (String) comboBoxID.getSelectedItem();
-				String text = mypats.getPatient(id).toString();
-				lblGetPatient.setText(text);
+				panelView.setVisible(true);
+				panelAdd.setVisible(false);
+				panelHome.setVisible(false);
+				panelUpdate.setVisible(false);
 			}
 		});
-
-		lblGetPatient = new JLabel("Patient's Information display here");
-		lblGetPatient.setVerticalAlignment(SwingConstants.TOP);
-		lblGetPatient.setBounds(49, 82, 364, 32);
-		panelView.add(lblGetPatient);
-
-		btnViewAllPat = new JButton("View All Patients");
-		// Action listener: display all patient's information upon clicking the button
-		btnViewAllPat.addActionListener(new ActionListener() {
+		btnUpdate.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
-				String id = "";
-				String text = "";
-				for (int i = 0; i < myIds1.size(); i++) {
-					id = myIds1.get(i);
-					text += mypats.getPatient(id).toString();
-					text += '\n';
-				}
-				textAreaViewAllPat.setText(text);
-
+				panelView.setVisible(false);
+				panelAdd.setVisible(false);
+				panelHome.setVisible(false);
+				panelUpdate.setVisible(true);
 			}
 		});
-		btnViewAllPat.setBounds(108, 118, 154, 23);
-		panelView.add(btnViewAllPat);
-
-		JScrollPane scrollPane_1 = new JScrollPane();
-		scrollPane_1.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-		scrollPane_1.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-		scrollPane_1.setBounds(49, 164, 431, 223);
-		panelView.add(scrollPane_1);
-
-		textAreaViewAllPat = new JTextArea();
-		scrollPane_1.setViewportView(textAreaViewAllPat);
+		btnAdd.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				panelView.setVisible(false);
+				panelAdd.setVisible(true);
+				panelHome.setVisible(false);
+				panelUpdate.setVisible(false);
+			}
+		});
 		myIds1 = mypats.getIds();
 
 		JMenuBar menuBar = new JMenuBar();
@@ -425,10 +434,11 @@ public class MainPanel extends JPanel {
 				panelUpdate.setVisible(false);
 			}
 		});
+
 	}
 
 	// save data after close the program
 	public void doClose() {
-		mypats.doWrite("./data.csv"); // change it to data.csv after done
+		mypats.doWrite("./testing.csv"); // change it to data.csv after done
 	}
 }
